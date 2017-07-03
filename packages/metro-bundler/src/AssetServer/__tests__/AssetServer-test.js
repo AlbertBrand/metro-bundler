@@ -185,6 +185,35 @@ describe('AssetServer', () => {
         expect(data).toBe('b1 image')
       );
     });
+
+    it('should work when using multiple project roots that have identical resource paths', () => {
+      const server = new AssetServer({
+        projectRoots: ['/root', '/root2'],
+        assetExts: ['png'],
+      });
+
+      fs.__setMockFilesystem({
+        'root': {
+          imgs: {
+            'a.png': 'a image',
+          },
+        },
+        'root2': {
+          imgs: {
+            'b.png': 'b image',
+          },
+        },
+      });
+
+      return Promise.all([
+        server.get('imgs/a.png').then(data =>
+          expect(data).toBe('a image')
+        ),
+        server.get('imgs/b.png').then(data =>
+          expect(data).toBe('b image')
+        ),
+      ]);
+    });
   });
 
   describe('assetServer.getAssetData', () => {
